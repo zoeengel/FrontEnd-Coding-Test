@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { PieChart, Pie, Sector, Cell } from "recharts";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardHeader from "@mui/material/CardHeader";
@@ -11,6 +12,7 @@ import BugReportRoundedIcon from "@mui/icons-material/BugReportRounded";
 import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import IssuesList from "./IssuesList";
+import { Margin, Padding } from "@mui/icons-material";
 
 function SearchResultCard({ result }) {
   const [repoIssues, setRepoIssues] = useState([]);
@@ -18,10 +20,37 @@ function SearchResultCard({ result }) {
   const [isLoading, setIsLoading] = useState(false);
   const [selectedRepoId, setSelectedRepoId] = useState(null);
   const [filter, setFilter] = useState("open");
+  const [issueCounts, setIssueCounts] = useState({ open: 0, closed: 0 });
+
+  const calculateIssueCounts = (issues) => {
+    const openCount = issues.filter((issue) => issue.state === "open").length;
+    const closedCount = issues.filter(
+      (issue) => issue.state === "closed"
+    ).length;
+    return { open: openCount, closed: closedCount };
+  };
 
   const handleFilterChange = (event) => {
     setFilter(event.target.value);
   };
+
+  //   const handleListIssues = async (repoOwner, repoName) => {
+  //     setIsLoading(true); // Set loading state
+  //     setError(null); // Clear previous errors
+
+  //     try {
+  //       const response = await axios.get(
+  //         `https://api.github.com/repos/${repoOwner}/${repoName}/issues`
+  //       ); // Fetch all issues (no filter)
+  //       setRepoIssues(response.data);
+  //       setIssueCounts(calculateIssueCounts(response.data)); // Update issue counts
+  //     } catch (error) {
+  //       console.error("Error fetching issues:", error);
+  //       setError(error.message); // Update state with error message
+  //     } finally {
+  //       setIsLoading(false); // Clear loading state
+  //     }
+  //   };
   const handleListIssues = async (repoOwner, repoName, filter = "open") => {
     setIsLoading(true); // Set loading state
     setError(null); // Clear previous errors
@@ -30,15 +59,14 @@ function SearchResultCard({ result }) {
     try {
       const response = await axios.get(
         `https://api.github.com/repos/${repoOwner}/${repoName}/issues?state=${filter}`
-        // `https://api.github.com/repos/<span class="math-inline">\{repoOwner\}/</span>{repoName}/issues?state=${filter}`
       );
-      setRepoIssues(response.data); // Update state with fetched issues
+      setRepoIssues(response.data);
+      setIssueCounts(calculateIssueCounts(response.data));
       console.log(repoIssues);
     } catch (error) {
       console.error("Error fetching issues:", error);
-      setError(error.message); // Update state with error message
     } finally {
-      setIsLoading(false); // Clear loading state
+      setIsLoading(false);
     }
   };
 
@@ -117,9 +145,39 @@ function SearchResultCard({ result }) {
         >
           View issues
         </Button>
-        {repoIssues.length > 0 && (
-          <IssuesList issues={repoIssues} /> // Pass issues data to IssuesList component
-        )}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "center",
+          }}
+        >
+          {issueCounts.open > 0 || issueCounts.closed > 0 ? (
+            <PieChart width={550} height={200}>
+              <Pie
+                data={[
+                  // Always include both open and closed data
+                  { name: "Open", value: issueCounts.open },
+                  { name: "Closed", value: issueCounts.closed },
+                ]}
+                cx={260}
+                cy={100}
+                outerRadius={80}
+                innerRadius={40}
+                labelLine={false}
+                label={({ name, value }) => `${name}: ${value}`}
+              >
+                {issueCounts && ( // Render cells only if data exists
+                  <>
+                    <Cell key="open" fill="#f44336" />
+                    <Cell key="closed" fill="#2ecc71" />
+                  </>
+                )}
+              </Pie>
+            </PieChart>
+          ) : null}
+        </div>
+        {repoIssues.length > 0 && <IssuesList issues={repoIssues} />}
         <br />
         <Button
           variant="contained"
