@@ -17,15 +17,20 @@ function SearchResultCard({ result }) {
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedRepoId, setSelectedRepoId] = useState(null);
+  const [filter, setFilter] = useState("open");
 
-  const handleListIssues = async (repoOwner, repoName) => {
+  const handleFilterChange = (event) => {
+    setFilter(event.target.value);
+  };
+  const handleListIssues = async (repoOwner, repoName, filter = "open") => {
     setIsLoading(true); // Set loading state
     setError(null); // Clear previous errors
     console.log("handle list issues click");
 
     try {
       const response = await axios.get(
-        `https://api.github.com/repos/${repoOwner}/${repoName}/issues`
+        `https://api.github.com/repos/${repoOwner}/${repoName}/issues?state=${filter}`
+        // `https://api.github.com/repos/<span class="math-inline">\{repoOwner\}/</span>{repoName}/issues?state=${filter}`
       );
       setRepoIssues(response.data); // Update state with fetched issues
       console.log(repoIssues);
@@ -102,9 +107,10 @@ function SearchResultCard({ result }) {
           style={{ display: "flex", alignContent: "center" }}
         >
           <BugReportRoundedIcon fontSize="small" /> {""}
-          {result.open_issues} issues
+          {result.open_issues} open issues
         </Typography>
         <Button
+          style={{ color: "transparent", backgroundColor: "transparent" }}
           variant="contained"
           size="small"
           onClick={() => handleListIssues(result.owner.login, result.name)}
@@ -114,6 +120,34 @@ function SearchResultCard({ result }) {
         {repoIssues.length > 0 && (
           <IssuesList issues={repoIssues} /> // Pass issues data to IssuesList component
         )}
+        <br />
+        <Button
+          variant="contained"
+          size="small"
+          onClick={() =>
+            handleListIssues(result.owner.login, result.name, filter)
+          }
+          style={{ marginRight: 8 }}
+        >
+          View issues ({filter})
+        </Button>
+        <Button
+          variant="outlined"
+          size="small"
+          value="closed"
+          onClick={handleFilterChange}
+          style={{ marginRight: 8 }}
+        >
+          Closed
+        </Button>
+        <Button
+          variant="outlined"
+          size="small"
+          value="open"
+          onClick={handleFilterChange}
+        >
+          Open
+        </Button>
       </CardContent>
     </Card>
   );

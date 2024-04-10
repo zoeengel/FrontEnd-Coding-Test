@@ -5,6 +5,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import CelebrationRoundedIcon from "@mui/icons-material/CelebrationRounded";
+import BugReportRoundedIcon from "@mui/icons-material/BugReportRounded";
 
 function IssuesList({ issues }) {
   if (!issues || issues.length === 0) {
@@ -37,9 +38,21 @@ function IssuesList({ issues }) {
             target="_blank"
             rel="noreferrer noopener"
           >
+            <BugReportRoundedIcon fontSize="x-small" />
             <ListItemText
               primary={
-                <Typography variant="body2" style={{ fontWeight: "lighter" }}>
+                <Typography
+                  variant="body2"
+                  style={{
+                    fontWeight: "lighter",
+                    marginLeft: 6,
+                    cursor: "pointer",
+                  }}
+                  onMouseOver={(event) =>
+                    (event.target.style.color = "#1a76d2")
+                  }
+                  onMouseOut={(event) => (event.target.style.color = "white")}
+                >
                   {issue.title}
                 </Typography>
               }
