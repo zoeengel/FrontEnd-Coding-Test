@@ -1,0 +1,8 @@
+.loaderBox {
+  display: flex;
+  flex-direction: column;
+}
+
+.loaderBox h3 {
+  text-align: center;
+}
