@@ -8,7 +8,7 @@ function SearchBar({ setSearchQuery }) {
   const handleSearchChange = (event) => {
     const searchValue = event.target.value;
     setSearchValue(searchValue);
-    setSearchQuery(searchValue); // Pass value to parent component
+    setSearchQuery(searchValue);
   };
 
   return (

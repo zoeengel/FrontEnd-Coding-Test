@@ -7,18 +7,15 @@ import "./LandingPage.css";
 import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import CircularProgress from "@mui/material/CircularProgress";
-import { Link as OtherLink } from "react-router-dom";
 
 function LandingPage() {
   const [searchText, setSearchText] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
-  const [selectedRepoId, setSelectedRepoId] = useState(null);
 
   const handleFetchSearchResults = async (searchQuery) => {
     setIsLoading(true);
-    setError(null); // Clear previous errors
 
     try {
       const response = await axios.get(
@@ -38,7 +35,7 @@ function LandingPage() {
     if (searchText) {
       handleFetchSearchResults(searchText);
     }
-  }, [searchText]); // Call API on searchText change
+  }, [searchText]);
 
   return (
     <div className="landing-section">
@@ -54,10 +51,7 @@ function LandingPage() {
           <List>
             {searchResults.map((result) => (
               <ListItem key={result.id}>
-                <SearchResultCard
-                  result={result}
-                  //   setSelectedRepoId={handleRepoSelection}
-                />
+                <SearchResultCard result={result} />
               </ListItem>
             ))}
           </List>

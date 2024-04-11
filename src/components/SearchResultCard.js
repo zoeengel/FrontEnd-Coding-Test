@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axios from "axios";
-import { PieChart, Pie, Sector, Cell } from "recharts";
+import { PieChart, Pie, Cell } from "recharts";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import CardHeader from "@mui/material/CardHeader";
@@ -12,13 +12,11 @@ import BugReportRoundedIcon from "@mui/icons-material/BugReportRounded";
 import Button from "@mui/material/Button";
 import Link from "@mui/material/Link";
 import IssuesList from "./IssuesList";
-import { Margin, Padding } from "@mui/icons-material";
 
 function SearchResultCard({ result }) {
   const [repoIssues, setRepoIssues] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedRepoId, setSelectedRepoId] = useState(null);
   const [filter, setFilter] = useState("open");
   const [issueCounts, setIssueCounts] = useState({ open: 0, closed: 0 });
 
@@ -34,26 +32,9 @@ function SearchResultCard({ result }) {
     setFilter(event.target.value);
   };
 
-  //   const handleListIssues = async (repoOwner, repoName) => {
-  //     setIsLoading(true); // Set loading state
-  //     setError(null); // Clear previous errors
-
-  //     try {
-  //       const response = await axios.get(
-  //         `https://api.github.com/repos/${repoOwner}/${repoName}/issues`
-  //       ); // Fetch all issues (no filter)
-  //       setRepoIssues(response.data);
-  //       setIssueCounts(calculateIssueCounts(response.data)); // Update issue counts
-  //     } catch (error) {
-  //       console.error("Error fetching issues:", error);
-  //       setError(error.message); // Update state with error message
-  //     } finally {
-  //       setIsLoading(false); // Clear loading state
-  //     }
-  //   };
   const handleListIssues = async (repoOwner, repoName, filter = "open") => {
-    setIsLoading(true); // Set loading state
-    setError(null); // Clear previous errors
+    setIsLoading(true);
+    setError(null);
     console.log("handle list issues click");
 
     try {
@@ -156,7 +137,6 @@ function SearchResultCard({ result }) {
             <PieChart width={550} height={200}>
               <Pie
                 data={[
-                  // Always include both open and closed data
                   { name: "Open", value: issueCounts.open },
                   { name: "Closed", value: issueCounts.closed },
                 ]}
@@ -167,7 +147,7 @@ function SearchResultCard({ result }) {
                 labelLine={false}
                 label={({ name, value }) => `${name}: ${value}`}
               >
-                {issueCounts && ( // Render cells only if data exists
+                {issueCounts && (
                   <>
                     <Cell key="open" fill="#f44336" />
                     <Cell key="closed" fill="#2ecc71" />
